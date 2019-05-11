@@ -93,4 +93,13 @@ public class BookKeeperTest {
         verify(taxPolicy, times(0)).calculateTax(Mockito.any(), Mockito.any());
     }
 
+    @Test
+    public void invoiceRequestWithOneItemNotInvokingCalculateTaxMethod() {
+        invoiceRequest.add(new RequestItem(productData, 2, new Money(3)));
+
+        bookKeeper.issuance(invoiceRequest, taxPolicy);
+
+        verify(taxPolicy, times(1)).calculateTax(Mockito.any(), Mockito.any());
+    }
+
 }
