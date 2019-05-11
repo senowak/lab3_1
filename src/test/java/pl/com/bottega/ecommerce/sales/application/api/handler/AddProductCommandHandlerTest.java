@@ -85,4 +85,12 @@ public class AddProductCommandHandlerTest {
 
         verify(suggestionService, times(1)).suggestEquivalent(any(Product.class), any(Client.class));
     }
+
+    @Test
+    public void productIsLoaded() {
+        addProductCommandHandler.handle(new AddProductCommand(Id.generate(), Id.generate(), 1));
+
+        verify(productRepository, times(1)).load(any(Id.class));
+    }
+
 }
