@@ -65,4 +65,13 @@ public class BookKeeperTest {
         verify(taxPolicy, times(2)).calculateTax(Mockito.any(), Mockito.any());
     }
 
+    @Test
+    public void invoiceReqyestWithZeroItemReturningInvoiceWithZeroItem() {
+        Invoice invoice = bookKeeper.issuance(invoiceRequest, taxPolicy);
+
+        Assert.assertThat(invoice.getItems()
+                                 .size(),
+                is(equalTo(0)));
+    }
+
 }
