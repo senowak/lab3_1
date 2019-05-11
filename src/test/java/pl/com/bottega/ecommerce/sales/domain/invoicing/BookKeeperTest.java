@@ -66,12 +66,24 @@ public class BookKeeperTest {
     }
 
     @Test
-    public void invoiceReqyestWithZeroItemReturningInvoiceWithZeroItem() {
+    public void invoiceRequestWithZeroItemReturningInvoiceWithZeroItem() {
         Invoice invoice = bookKeeper.issuance(invoiceRequest, taxPolicy);
 
         Assert.assertThat(invoice.getItems()
                                  .size(),
                 is(equalTo(0)));
+    }
+
+    @Test
+    public void invoiceRequestWithOneItemAndTenQuantityReturningInvoiceWithOneItem() {
+        requestItem = new RequestItem(productData, 10, new Money(1));
+        invoiceRequest.add(requestItem);
+
+        Invoice invoice = bookKeeper.issuance(invoiceRequest, taxPolicy);
+
+        Assert.assertThat(invoice.getItems()
+                                 .size(),
+                is(equalTo(1)));
     }
 
 }
