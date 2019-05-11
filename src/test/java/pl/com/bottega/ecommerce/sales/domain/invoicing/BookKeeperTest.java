@@ -4,6 +4,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
@@ -11,6 +13,7 @@ import java.util.Date;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.ClientData;
 import pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.Id;
@@ -51,4 +54,15 @@ public class BookKeeperTest {
                                  .size(),
                 is(equalTo(1)));
     }
+
+    @Test
+    public void invoiceRequestWithTwoItemInvokingCalculateTaxMethodTwice() {
+        invoiceRequest.add(new RequestItem(productData, 1, new Money(2)));
+        invoiceRequest.add(new RequestItem(productData, 2, new Money(3)));
+
+        bookKeeper.issuance(invoiceRequest, taxPolicy);
+
+        verify(taxPolicy, times(2)).calculateTax(Mockito.any(), Mockito.any());
+    }
+
 }
