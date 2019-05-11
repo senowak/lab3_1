@@ -26,6 +26,8 @@ import pl.com.bottega.ecommerce.sales.domain.productscatalog.ProductType;
 import pl.com.bottega.ecommerce.sales.domain.reservation.Reservation;
 import pl.com.bottega.ecommerce.sales.domain.reservation.ReservationRepository;
 import pl.com.bottega.ecommerce.sharedkernel.Money;
+import pl.com.bottega.ecommerce.system.application.SystemContext;
+import pl.com.bottega.ecommerce.system.application.SystemUser;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AddProductCommandHandlerTest {
@@ -40,6 +42,8 @@ public class AddProductCommandHandlerTest {
     private SuggestionService suggestionService;
     @Mock
     private ClientRepository clientRepository;
+    @Mock
+    private SystemContext systemContext;
 
     private Reservation reservation;
     private Product product;
@@ -52,6 +56,11 @@ public class AddProductCommandHandlerTest {
 
         product = new Product(Id.generate(), new Money(1), "Test Product", ProductType.STANDARD);
         when(productRepository.load(any(Id.class))).thenReturn(product);
+
+        when(clientRepository.load(any(Id.class))).thenReturn(new Client());
+        when(systemContext.getSystemUser()).thenReturn(new SystemUser(Id.generate()));
+        when(suggestionService.suggestEquivalent(any(Product.class), any(Client.class))).thenReturn(
+                new Product(Id.generate(), new Money(1), "Test Product", ProductType.STANDARD));
     }
 
     @Test
@@ -66,5 +75,14 @@ public class AddProductCommandHandlerTest {
         addProductCommandHandler.handle(new AddProductCommand(Id.generate(), Id.generate(), 1));
 
         verify(suggestionService, times(0)).suggestEquivalent(any(Product.class), any(Client.class));
+    }
+
+    @Test
+    public void itemIsNotAvailable() {
+        product.markAsRemoved();
+        when(productRepository.load(any(Id.class))).thenReturn(product);
+        addProductCommandHandler.handle(new AddProductCommand(Id.generate(), Id.generate(), 1));
+
+        verify(suggestionService, times(1)).suggestEquivalent(any(Product.class), any(Client.class));
     }
 }
