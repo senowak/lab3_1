@@ -17,6 +17,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.ClientData;
 import pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.Id;
 import pl.com.bottega.ecommerce.sales.application.api.command.AddProductCommand;
+import pl.com.bottega.ecommerce.sales.domain.client.Client;
 import pl.com.bottega.ecommerce.sales.domain.client.ClientRepository;
 import pl.com.bottega.ecommerce.sales.domain.equivalent.SuggestionService;
 import pl.com.bottega.ecommerce.sales.domain.productscatalog.Product;
@@ -58,5 +59,12 @@ public class AddProductCommandHandlerTest {
         addProductCommandHandler.handle(new AddProductCommand(Id.generate(), Id.generate(), 1));
 
         verify(reservationRepository, times(1)).save(any(Reservation.class));
+    }
+
+    @Test
+    public void itemIsAvailable() {
+        addProductCommandHandler.handle(new AddProductCommand(Id.generate(), Id.generate(), 1));
+
+        verify(suggestionService, times(0)).suggestEquivalent(any(Product.class), any(Client.class));
     }
 }
